@@ -1,0 +1,21 @@
+defaultTs: bun
+includes:
+  - f/**
+excludes:
+  - f/**/tests/**
+skipVariables: false
+skipResources: false
+skipResourceTypes: false
+skipSecrets: true
+skipScripts: false
+skipFlows: false
+skipApps: false
+skipFolders: false
+skipWorkspaceDependencies: false
+nonDottedPaths: true
+syncBehavior: v1
+codebases: []
+workspaces:
+  rohit:
+    workspaceId: rohit
+    baseUrl: http://localhost:8000/

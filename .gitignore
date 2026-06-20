@@ -1,0 +1,39 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Docker data volumes
+data/postgres/
+data/redis/
+data/windmill/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if using node scripts)
+node_modules/
+npm-debug.log
+
+# Windmill CLI local config (contains tokens — never commit)
+~/.config/wmill/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
