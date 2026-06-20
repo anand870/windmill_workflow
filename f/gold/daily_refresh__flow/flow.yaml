@@ -1,0 +1,108 @@
+summary: 'Daily gold price refresh: current prices, history gap fill, and indicators'
+description: 'Runs three sequential steps: fetch and upsert current USD/AED/INR
+  prices, fill historical gaps for the last N days, then compute and upsert
+  technical indicators.'
+value:
+  modules:
+    - id: step1_current_prices
+      summary: 'Step 1: Fetch and upsert current prices (USD/AED/INR)'
+      value:
+        type: rawscript
+        content: '!inline step1_current_prices.py'
+        input_transforms:
+          currencies:
+            type: javascript
+            expr: flow_input.currencies
+          database_url:
+            type: javascript
+            expr: flow_input.database_url
+          freegoldapi_key:
+            type: javascript
+            expr: flow_input.freegoldapi_key
+          goldapi_key:
+            type: javascript
+            expr: flow_input.goldapi_key
+          metalsdev_key:
+            type: javascript
+            expr: flow_input.metalsdev_key
+        lock: '!inline step1_current_prices.lock'
+        language: python3
+    - id: step2_history_gap_fill
+      summary: 'Step 2: Fill historical price gaps'
+      value:
+        type: rawscript
+        content: '!inline step2_history_gap_fill.py'
+        input_transforms:
+          currencies:
+            type: javascript
+            expr: flow_input.currencies
+          database_url:
+            type: javascript
+            expr: flow_input.database_url
+          freegoldapi_key:
+            type: javascript
+            expr: flow_input.freegoldapi_key
+          goldapi_key:
+            type: javascript
+            expr: flow_input.goldapi_key
+          history_days:
+            type: javascript
+            expr: flow_input.history_days
+          metalsdev_key:
+            type: javascript
+            expr: flow_input.metalsdev_key
+        lock: '!inline step2_history_gap_fill.lock'
+        language: python3
+    - id: step3_indicators
+      summary: 'Step 3: Compute and upsert technical indicators'
+      value:
+        type: rawscript
+        content: '!inline step3_indicators.py'
+        input_transforms:
+          database_url:
+            type: javascript
+            expr: flow_input.database_url
+        lock: '!inline step3_indicators.lock'
+        language: python3
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  order:
+    - database_url
+    - currencies
+    - history_days
+    - freegoldapi_key
+    - metalsdev_key
+    - goldapi_key
+  properties:
+    currencies:
+      type: array
+      description: Currencies to process
+      default:
+        - USD
+        - AED
+        - INR
+      items:
+        type: string
+    database_url:
+      type: string
+      description: PostgreSQL connection URL
+      default: $var:u/rohit/gold_db_writer_url
+    freegoldapi_key:
+      type: string
+      description: FreeGoldAPI key (optional)
+      default: $var:u/rohit/freegoldapi_key
+    goldapi_key:
+      type: string
+      description: GoldAPI key (optional)
+      default: $var:u/rohit/goldapi_key
+    history_days:
+      type: integer
+      description: Number of days of historical data to gap-fill
+      default: 5
+    metalsdev_key:
+      type: string
+      description: Metals.dev API key (optional)
+      default: $var:u/rohit/metalsdev_key
+  required:
+    - database_url

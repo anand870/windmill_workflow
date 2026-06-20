@@ -1,0 +1,5 @@
+# workspace-dependencies-mode: manual
+# py: 3.12
+greenlet==3.5.2
+sqlalchemy==2.0.51
+typing-extensions==4.15.0

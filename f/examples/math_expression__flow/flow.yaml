@@ -1,0 +1,63 @@
+summary: Compute (((a+b)*a)+b) step by step
+description: 'Takes two numbers a and b, then computes (((a+b)*a)+b) across
+  three sequential steps: step1=a+b, step2=step1*a, step3=step2+b.'
+value:
+  modules:
+    - id: step1_add
+      summary: 'Step 1: Compute a + b'
+      value:
+        type: rawscript
+        content: '!inline step1_add.ts'
+        input_transforms:
+          a:
+            type: javascript
+            expr: flow_input.a
+          b:
+            type: javascript
+            expr: flow_input.b
+        lock: '!inline step1_add.lock'
+        language: bun
+    - id: step2_multiply
+      summary: 'Step 2: Multiply (a+b) * a'
+      value:
+        type: rawscript
+        content: '!inline step2_multiply.ts'
+        input_transforms:
+          a:
+            type: javascript
+            expr: flow_input.a
+          sum:
+            type: javascript
+            expr: results.step1_add
+        lock: '!inline step2_multiply.lock'
+        language: bun
+    - id: step3_add_b
+      summary: 'Step 3: Add b to get final result'
+      value:
+        type: rawscript
+        content: '!inline step3_add_b.ts'
+        input_transforms:
+          b:
+            type: javascript
+            expr: flow_input.b
+          product:
+            type: javascript
+            expr: results.step2_multiply
+        lock: '!inline step3_add_b.lock'
+        language: bun
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  order:
+    - a
+    - b
+  properties:
+    a:
+      type: number
+      description: First number (a)
+    b:
+      type: number
+      description: Second number (b)
+  required:
+    - a
+    - b
